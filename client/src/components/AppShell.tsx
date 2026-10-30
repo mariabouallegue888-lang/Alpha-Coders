@@ -1,0 +1,25 @@
+import { useCallback, useEffect, useId, useState, type ReactNode } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowUpRight, CalendarDays, ChevronRight, Compass, LayoutDashboard, ListChecks, LogOut, Menu, Settings2, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../auth/AuthContext';
+import Modal from './Modal';
+import { Brand } from './ui';
+
+export type NavigationKey = 'dashboard' | 'resources' | 'bookings' | 'admin-dashboard' | 'admin-resources' | 'admin-bookings';
+export default function AppShell({ active, breadcrumb, title, description, eyebrow = 'YOUR CAMPUS, CONNECTED', actions, children }: { active: NavigationKey; breadcrumb: string; title?: string; description?: string; eyebrow?: string; actions?: ReactNode; children: ReactNode }) {
+  const { session, logout } = useAuth();
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false), menuId = useId();
+  const closeMenu = useCallback(() => setMobileOpen(false), []);
+  const admin = session?.user.role === 'admin';
+  useEffect(() => { if (!window.matchMedia) return; const media = window.matchMedia('(min-width: 1025px)'); const resize = () => { if (media.matches) setMobileOpen(false); }; media.addEventListener('change', resize); return () => media.removeEventListener('change', resize); }, []);
+  function signOut() { logout(); setMobileOpen(false); navigate('/', { replace: true }); }
+  function navigation() {
+    const personal = [{ key: 'dashboard', label: 'Overview', to: '/dashboard', icon: LayoutDashboard }, { key: 'resources', label: 'Explore resources', to: '/', icon: Compass }, { key: 'bookings', label: 'My bookings', to: '/bookings', icon: CalendarDays }];
+    const management = [{ key: 'admin-dashboard', label: 'Campus overview', to: '/admin/dashboard', icon: ShieldCheck }, { key: 'admin-resources', label: 'Resources', to: '/admin', icon: Settings2 }, { key: 'admin-bookings', label: 'All reservations', to: '/admin/bookings', icon: ListChecks }];
+    const links = (items: typeof personal) => items.map(({ key, label, to, icon: Icon }) => <Link to={to} key={key} className={`nav-item ${active === key ? 'active' : ''}`} aria-current={active === key ? 'page' : undefined} onClick={closeMenu}><Icon size={19} strokeWidth={1.8}/><span>{label}</span>{active === key && <span className="nav-indicator"/>}</Link>);
+    return <><div className="nav-label">WORKSPACE</div><nav aria-label="Workspace navigation">{links(personal)}</nav>{admin && <><div className="nav-label admin-nav-label">ADMINISTRATION</div><nav aria-label="Administration navigation">{links(management)}</nav></>}</>;
+  }
+  const profile = <div className="profile">{session ? <><span className="avatar">{session.user.name.slice(0, 1).toUpperCase()}</span><div className="profile-text"><strong>{session.user.name}</strong><small>{admin ? 'Campus administrator' : 'Campus member'}</small></div><button className="icon-button" onClick={signOut} aria-label="Sign out" title="Sign out"><LogOut size={17}/></button></> : <Link to="/login" className="ui-button ui-button-secondary w-full" onClick={closeMenu}>Sign in to your campus<ArrowUpRight size={16}/></Link>}</div>;
+  return <div className="app-shell"><a className="skip-link" href="#main-content">Skip to content</a><aside className="sidebar"><Brand/>{navigation()}<div className="sidebar-note"><span className="sidebar-note-icon"><Compass size={21}/></span><h3>A little space.<br/>A lot of possibility.</h3><p>Find your focus, your team, or your next big idea.</p><Link to="/">Find your space<ArrowUpRight size={15}/></Link></div>{profile}</aside><div className="main-shell"><header className="topbar"><div className="mobile-topbar"><button className="icon-button menu-button" aria-label="Open navigation" aria-expanded={mobileOpen} aria-controls={menuId} onClick={() => setMobileOpen(true)}><Menu size={23}/></button><Brand/></div><span className="breadcrumb"><span>Workspace</span><ChevronRight size={14}/><strong>{breadcrumb}</strong></span><div className="topbar-right"><span className="topbar-campus"><span className="campus-mark"/>Campus Resource Booking</span>{session ? <span className="topbar-avatar" title={session.user.name}>{session.user.name.slice(0, 1).toUpperCase()}</span> : <Link to="/login" className="ui-button ui-button-secondary small-button">Sign in<ArrowUpRight size={15}/></Link>}</div></header><main id="main-content" className="page-main"><div className="page-container">{title && <div className="page-heading"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1>{description && <p>{description}</p>}</div>{actions || <span className="date-label"><CalendarDays size={16}/>{new Date().toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}</span>}</div>}{children}<footer className="page-footer"><span>campus<span className="brand-dot">.</span><span>Make room for what matters.</span></span><span>Built for campus life.</span></footer></div></main></div>{mobileOpen && <Modal title="Your campus" onClose={closeMenu} drawer><div id={menuId} className="mobile-navigation">{navigation()}{profile}</div></Modal>}</div>;
+}

@@ -1,0 +1,39 @@
+{
+  "name": "campus-resource-booking",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "workspaces": ["client", "server"],
+  "engines": { "node": ">=22.18.0" },
+  "devDependencies": {
+    "concurrently": "^9.2.4",
+    "eslint": "9.32.0",
+    "@eslint/js": "9.32.0",
+    "typescript-eslint": "8.38.0",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "globals": "15.15.0"
+  },
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "dev": "concurrently -k -n api,web \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "start": "npm run start -w server",
+    "lint": "eslint .",
+    "test": "npm run test -w server",
+    "test:client": "npm run test -w client",
+    "test:client:ui": "npm run test:ui -w client",
+    "test:bookings": "npm run test:bookings -w server",
+    "test:bookings:integration": "npm run test:bookings:integration -w server",
+    "test:resources": "npm run test:resources -w server",
+    "test:admin": "npm run test:admin -w server",
+    "test:admin:integration": "npm run test:admin:integration -w server",
+    "test:integration": "npm run test:integration -w server",
+    "test:rules": "npm run test:rules -w server",
+    "test:db:probe": "npm run test:db:probe -w server",
+    "typecheck": "npm run typecheck -w client",
+    "seed": "npm run seed -w server",
+    "seed:admin": "npm run seed:admin -w server",
+    "check": "npm run lint && npm test && npm run test:client && npm run test:client:ui && npm run build",
+    "check:release": "npm run check && npm run test:integration"
+  }
+}

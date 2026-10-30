@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=22.18.0"},
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "zod": "^3.25.76"
+  },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/seed.js",
+    "seed:admin": "node src/seedAdmin.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "test:bookings": "node --test test/booking.test.js test/transaction.test.js test/booking-management.test.js",
+    "test:bookings:integration": "node scripts/runBookingIntegration.js",
+    "test:resources": "node --test test/resource-rules.test.js test/validation.test.js test/resources.integration.test.js",
+    "test:admin": "node --test test/admin-dashboard.test.js test/validation.test.js",
+    "test:admin:integration": "node scripts/runAdminDashboardIntegration.js",
+    "test:integration": "node scripts/runIntegration.js",
+    "test:rules": "node --test test/admin-dashboard.test.js test/booking.test.js test/transaction.test.js test/booking-management.test.js test/resource-rules.test.js test/auth-profile.test.js test/qa-calendar.test.js",
+    "test:db:probe": "node scripts/runDatabaseProbe.js"
+  }
+}
