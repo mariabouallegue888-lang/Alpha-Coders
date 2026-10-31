@@ -17,7 +17,7 @@ npm ci --cache .npm-cache
 if (!(Test-Path server/.env)) { Copy-Item .env.example server/.env }
 ```
 
-On macOS/Linux, use `cp -n .env.example server/.env`. Edit `server/.env`: set a random JWT secret of at least 32 characters and choose a seed administrator email and password (at least 8 characters, at most 72 UTF-8 bytes). Generate a secret with:
+On macOS/Linux, use `cp -n .env.example server/.env`. Edit `server/.env`: set a random JWT secret of at least 32 characters and choose a seed administrator email and password (at least 8 characters, at most 72 UTF-8 bytes). When `server/.env` is absent, the server also loads `.env` from the repository root. Generate a secret with:
 
 ```sh
 node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
